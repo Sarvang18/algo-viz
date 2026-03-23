@@ -70,6 +70,7 @@ export interface AlgorithmMeta {
   implemented: boolean;
   generator?: any;
   code?: string;
+  tags?: string[];
 }
 
 export interface SubCategory {
@@ -349,6 +350,109 @@ export const catalog: CatalogCategory[] = [
     ]
   }
 ];
+
+// Semantic tags mapping to improve fuzzy search relevance
+const searchTags: Record<string, string[]> = {
+  // Arrays & Searching
+  linearSearch: ['find', 'array', 'basic', 'sequential'],
+  binarySearch: ['find', 'log n', 'divide and conquer', 'sorted'],
+  ternarySearch: ['find', 'divide and conquer', 'sorted'],
+  // Sorting
+  bubbleSort: ['sort', 'n2', 'slow', 'adjacent swap', 'brute force'],
+  selectionSort: ['sort', 'n2', 'minimum', 'slow'],
+  insertionSort: ['sort', 'n2', 'cards', 'online'],
+  mergeSort: ['sort', 'n log n', 'divide and conquer', 'stable'],
+  quickSort: ['sort', 'n log n', 'pivot', 'divide and conquer', 'fast', 'hoare', 'lomuto'],
+  heapSort: ['sort', 'n log n', 'priority queue', 'max heap', 'in-place'],
+  countingSort: ['sort', 'linear', 'O(n+k)', 'integers', 'non-comparison'],
+  radixSort: ['sort', 'linear', 'digits', 'numbers', 'non-comparison'],
+  bucketSort: ['sort', 'linear', 'uniform distribution', 'scatter gather'],
+  // Two Pointer / Sliding Window
+  twoSum: ['pointers', 'target', 'pair', 'sum'],
+  threeSum: ['pointers', 'target', 'triplet', 'sum', '4sum'],
+  slidingWindowMax: ['window', 'deque', 'maximum', 'subarray'],
+  longestSubstring: ['window', 'string', 'unique', 'repeating'],
+  // Recursion & Backtracking
+  factorial: ['math', 'recursive', 'basic'],
+  fibonacci: ['math', 'recursive', 'sequence'],
+  towerOfHanoi: ['puzzle', 'recursive', 'disks', 'pegs'],
+  nQueens: ['backtracking', 'chess', 'board', 'combinations', 'exhaustive'],
+  sudokuSolver: ['backtracking', 'puzzle', 'sudoku', 'grid'],
+  permutations: ['backtracking', 'combinations', 'order', 'arrangements'],
+  subsetGen: ['backtracking', 'combinations', 'power set'],
+  // Trees
+  levelOrder: ['bfs', 'breadth first search', 'queue', 'layers'],
+  heightDepth: ['dfs', 'depth first search', 'recursion', 'metrics'],
+  lca: ['lowest common ancestor', 'dfs', 'paths'],
+  // BST
+  insertionDeletion: ['bst', 'binary search tree', 'add', 'remove'],
+  validateBst: ['bst', 'binary search tree', 'check', 'valid'],
+  kthSmallest: ['bst', 'inorder', 'binary search tree', 'statistics'],
+  // Graphs
+  bfs: ['graph', 'breadth first search', 'shortest path', 'queue'],
+  dfs: ['graph', 'depth first search', 'stack', 'recursion'],
+  dijkstra: ['shortest path', 'graph', 'greedy', 'weights', 'priority queue'],
+  bellmanFord: ['shortest path', 'graph', 'negative weights', 'dynamic programming'],
+  floydWarshall: ['shortest path', 'graph', 'all pairs', 'dynamic programming', 'matrix'],
+  kruskal: ['mst', 'minimum spanning tree', 'greedy', 'disjoint set', 'union find', 'edges'],
+  prim: ['mst', 'minimum spanning tree', 'greedy', 'priority queue', 'vertices'],
+  topologicalSort: ['graph', 'dag', 'directed acyclic', 'dependencies', 'ordering', 'kahn'],
+  // String Matching
+  naiveStringMatch: ['string', 'search', 'brute force', 'substring'],
+  kmp: ['string', 'search', 'knuth morris pratt', 'lps', 'pattern'],
+  rabinKarp: ['string', 'search', 'hashing', 'rolling hash', 'pattern'],
+  zAlgorithm: ['string', 'search', 'z array', 'pattern', 'linear'],
+  manacher: ['string', 'palindrome', 'longest', 'linear'],
+  // Dynamic Programming
+  fibonacciDp: ['dp', 'memoization', 'tabulation', 'bottom up', 'top down'],
+  climbingStairs: ['dp', 'combinations', 'paths'],
+  knapsack: ['dp', '0/1 knapsack', 'optimization', 'capacity', 'weights', 'values'],
+  lcs: ['dp', 'longest common subsequence', 'strings', 'matrix', '2d'],
+  lis: ['dp', 'longest increasing subsequence', 'array', 'optimization'],
+  editDistance: ['dp', 'levenshtein', 'strings', 'difference', 'matrix', '2d'],
+  dpTrees: ['dp', 'tree', 'dynamic programming on trees', 'recursion'],
+  dpGrids: ['dp', 'matrix', 'paths', 'obstacles', '2d'],
+  bitmaskDp: ['dp', 'bit manipulation', 'subsets', 'tsp', 'traveling salesperson'],
+  // Greedy
+  activitySelection: ['greedy', 'intervals', 'scheduling', 'optimization'],
+  fractionalKnapsack: ['greedy', 'knapsack', 'continuous', 'ratio', 'optimization'],
+  huffmanCoding: ['greedy', 'compression', 'encoding', 'tree', 'frequency'],
+  jobScheduling: ['greedy', 'intervals', 'deadlines', 'profit', 'optimization'],
+  // Bit Manipulation
+  xorTricks: ['bits', 'bitwise', 'xor', 'single number', 'duplicates'],
+  subsetsBits: ['bits', 'bitwise', 'power set', 'combinations', 'mask'],
+  powerOf2: ['bits', 'bitwise', 'math', 'brian kernighan'],
+  // Heaps
+  minMaxHeap: ['heap', 'priority queue', 'tree', 'array', 'binary'],
+  heapSort2: ['sort', 'heap', 'priority queue', 'max heap', 'in-place'],
+  kthLargest: ['heap', 'priority queue', 'statistics', 'min heap'],
+  mergeKSorted: ['heap', 'priority queue', 'lists', 'arrays', 'linked lists', 'pointers'],
+  // Math / Number Theory
+  sieve: ['math', 'primes', 'eratosthenes', 'numbers'],
+  gcd: ['math', 'euclid', 'greatest common divisor', 'numbers'],
+  modularArithmetic: ['math', 'modulo', 'remainder', 'exponentiation'],
+  fastExponentiation: ['math', 'power', 'binary exponentiation', 'divide and conquer'],
+};
+
+// Inject tags into catalog
+catalog.forEach(category => {
+  if (category.subcategories) {
+    category.subcategories.forEach(sub => {
+      sub.algorithms.forEach(algo => {
+        if (searchTags[algo.id]) {
+          algo.tags = searchTags[algo.id];
+        }
+      });
+    });
+  }
+  if (category.algorithms) {
+    category.algorithms.forEach(algo => {
+      if (searchTags[algo.id]) {
+        algo.tags = searchTags[algo.id];
+      }
+    });
+  }
+});
 
 export const getAlgorithmById = (id: string): AlgorithmMeta | null => {
   for (const cat of catalog) {

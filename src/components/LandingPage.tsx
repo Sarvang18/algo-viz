@@ -3,7 +3,7 @@ import { catalog } from '../engine/catalog';
 import type { SubCategory, AlgorithmMeta } from '../engine/catalog';
 import { useDispatch } from 'react-redux';
 import { setAlgorithm } from '../store/visualizerSlice';
-import { Activity, ChevronDown, ChevronRight } from 'lucide-react';
+import { Activity, ChevronDown, ChevronRight, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AccordionItem: React.FC<{ sub: SubCategory, onSelect: (algo: AlgorithmMeta) => void }> = ({ sub, onSelect }) => {
@@ -75,9 +75,23 @@ export const LandingPage: React.FC = () => {
           <h1 className="text-5xl sm:text-6xl font-black tracking-tight text-white drop-shadow-sm mb-4">
             algo<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">.platform</span>
           </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto font-medium">
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto font-medium mb-10">
             Master 100+ Data Structures & Algorithms with Interactive Visualizations.
           </p>
+
+          <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('toggle-search-modal'))}
+            className="group relative w-full max-w-lg mx-auto flex items-center bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-2xl px-6 py-4 transition-all duration-300 shadow-2xl overflow-hidden cursor-text"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Search className="text-gray-400 group-hover:text-blue-400 transition-colors shrink-0 mr-4" size={24} />
+            <span className="text-gray-500 font-medium text-lg flex-1 text-left">
+              Search algorithms, topics...
+            </span>
+            <div className="hidden sm:flex items-center gap-1 font-mono text-[11px] font-bold bg-white/10 text-gray-400 px-2 py-1 rounded-md ml-4 shrink-0 border border-white/5">
+              <span>⌘</span><span>K</span>
+            </div>
+          </button>
         </header>
 
         {/* CSS Multi-column layout reduces overflowing massive columns gracefully */}

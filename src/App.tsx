@@ -10,8 +10,9 @@ import { ComplexityPanel } from './components/Visualizer/ComplexityPanel';
 import { LandingPage } from './components/LandingPage';
 import { runAlgorithm } from './engine/runner';
 import { getAlgorithmById } from './engine/catalog';
-import { Database, ArrowLeft } from 'lucide-react';
+import { Database, ArrowLeft, Search } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
+import { SearchModal } from './components/Navigation/SearchModal';
 import { clearAlgorithm } from './store/visualizerSlice';
 import type { RootState } from './store/store';
 
@@ -20,8 +21,15 @@ function App() {
   const { currentAlgorithm, dsType } = useSelector((state: RootState) => state.visualizer);
   
   const [inputArray, setInputArray] = useState([34, 12, 5, 9, 42, 67, 23, 1, 88, 55, 10, 2]);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const activeAlgoObj = currentAlgorithm ? getAlgorithmById(currentAlgorithm) : null;
+
+  useEffect(() => {
+    const handleToggleSearch = () => setIsSearchOpen(prev => !prev);
+    window.addEventListener('toggle-search-modal', handleToggleSearch);
+    return () => window.removeEventListener('toggle-search-modal', handleToggleSearch);
+  }, []);
 
   useEffect(() => {
     if (!activeAlgoObj || !activeAlgoObj.generator) return;
@@ -48,11 +56,17 @@ function App() {
   }, [inputArray, currentAlgorithm, activeAlgoObj]);
 
   if (!currentAlgorithm || !activeAlgoObj) {
-    return <LandingPage />;
+    return (
+      <>
+        <LandingPage />
+        <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      </>
+    );
   }
 
   return (
     <div className="flex bg-[#0a0a0f] h-screen text-gray-100 flex-col overflow-hidden font-sans w-full relative">
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
       
       {/* Dynamic Background */}
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none" />
@@ -79,6 +93,19 @@ function App() {
         </div>
 
         <div className="flex items-center gap-4">
+          <button
+            onClick={() => setIsSearchOpen(true)}
+            className="flex items-center justify-between w-48 px-3 py-1.5 bg-black/40 border border-white/10 hover:border-white/30 rounded-lg text-gray-400 hover:text-white transition-all shadow-inner text-xs cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <Search size={14} />
+              <span>Search...</span>
+            </div>
+            <div className="flex items-center gap-1 font-mono text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-gray-400">
+              <span>⌘</span><span>K</span>
+            </div>
+          </button>
+          
           <button 
             onClick={() => {
               const newArr = Array.from({length: 12}, () => Math.floor(Math.random() * 100) + 1);
