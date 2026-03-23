@@ -34,6 +34,35 @@ import * as SP from './algorithms/shortestPath';
 import * as MST from './algorithms/mstAndTopo';
 import * as StringMatch from './algorithms/stringMatching';
 
+import { fibonacciDpCode, fibonacciDp } from './algorithms/fibonacciDp';
+import { climbingStairsCode, climbingStairs } from './algorithms/climbingStairs';
+import { knapsackCode, knapsack } from './algorithms/knapsack';
+import { lcsCode, lcs } from './algorithms/lcs';
+import { lisCode, lis } from './algorithms/lis';
+import { editDistanceCode, editDistance } from './algorithms/editDistance';
+import { dpTreesCode, dpTrees } from './algorithms/dpTrees';
+import { dpGridsCode, dpGrids } from './algorithms/dpGrids';
+import { bitmaskDpCode, bitmaskDp } from './algorithms/bitmaskDp';
+
+import { activitySelectionCode, activitySelection } from './algorithms/activitySelection';
+import { fractionalKnapsackCode, fractionalKnapsack } from './algorithms/fractionalKnapsack';
+import { huffmanCodingCode, huffmanCoding } from './algorithms/huffmanCoding';
+import { jobSchedulingCode, jobScheduling } from './algorithms/jobScheduling';
+
+import { xorTricksCode, xorTricks } from './algorithms/xorTricks';
+import { subsetsBitsCode, subsetsBits } from './algorithms/subsetsBits';
+import { powerOf2Code, powerOf2 } from './algorithms/powerOf2';
+
+import { minMaxHeapCode, minMaxHeap } from './algorithms/minMaxHeap';
+import { heapSort2Code, heapSort2 } from './algorithms/heapSort2';
+import { kthLargestCode, kthLargest } from './algorithms/kthLargest';
+import { mergeKSortedCode, mergeKSorted } from './algorithms/mergeKSorted';
+
+import { sieveCode, sieve } from './algorithms/sieve';
+import { gcdCode, gcd } from './algorithms/gcd';
+import { modularArithmeticCode, modularArithmetic } from './algorithms/modularArithmetic';
+import { fastExponentiationCode, fastExponentiation } from './algorithms/fastExponentiation';
+
 export interface AlgorithmMeta {
   id: string;
   name: string;
@@ -206,25 +235,25 @@ export const catalog: CatalogCategory[] = [
       {
         name: '🔹 Basic DP',
         algorithms: [
-          { id: 'fibonacciDp', name: 'Fibonacci DP', dsType: 'array', implemented: false },
-          { id: 'climbingStairs', name: 'Climbing Stairs', dsType: 'array', implemented: false },
+          { id: 'fibonacciDp', name: 'Fibonacci DP', dsType: 'array', implemented: true, generator: fibonacciDp, code: fibonacciDpCode },
+          { id: 'climbingStairs', name: 'Climbing Stairs', dsType: 'array', implemented: true, generator: climbingStairs, code: climbingStairsCode },
         ]
       },
       {
         name: '🔹 Classic Problems',
         algorithms: [
-          { id: 'knapsack', name: '0/1 Knapsack', dsType: 'array', implemented: false },
-          { id: 'lcs', name: 'Longest Common Subsequence', dsType: 'array', implemented: false },
-          { id: 'lis', name: 'Longest Increasing Subsequence', dsType: 'array', implemented: false },
-          { id: 'editDistance', name: 'Edit Distance', dsType: 'array', implemented: false },
+          { id: 'knapsack', name: '0/1 Knapsack', dsType: 'array', implemented: true, generator: knapsack, code: knapsackCode },
+          { id: 'lcs', name: 'Longest Common Subsequence', dsType: 'array', implemented: true, generator: lcs, code: lcsCode },
+          { id: 'lis', name: 'Longest Increasing Subsequence', dsType: 'array', implemented: true, generator: lis, code: lisCode },
+          { id: 'editDistance', name: 'Edit Distance', dsType: 'array', implemented: true, generator: editDistance, code: editDistanceCode },
         ]
       },
       {
         name: '🔹 Advanced DP',
         algorithms: [
-          { id: 'dpTrees', name: 'DP on Trees', dsType: 'array', implemented: false },
-          { id: 'dpGrids', name: 'DP on Grids', dsType: 'array', implemented: false },
-          { id: 'bitmaskDp', name: 'Bitmask DP', dsType: 'array', implemented: false },
+          { id: 'dpTrees', name: 'DP on Trees', dsType: 'tree', implemented: true, generator: dpTrees, code: dpTreesCode },
+          { id: 'dpGrids', name: 'DP on Grids', dsType: 'matrix', implemented: true, generator: dpGrids, code: dpGridsCode },
+          { id: 'bitmaskDp', name: 'Bitmask DP', dsType: 'array', implemented: true, generator: bitmaskDp, code: bitmaskDpCode },
         ]
       }
     ]
@@ -236,10 +265,10 @@ export const catalog: CatalogCategory[] = [
       {
         name: '🔹 Core Algorithms',
         algorithms: [
-          { id: 'activitySelection', name: 'Activity Selection', dsType: 'array', implemented: false },
-          { id: 'fractionalKnapsack', name: 'Fractional Knapsack', dsType: 'array', implemented: false },
-          { id: 'huffmanCoding', name: 'Huffman Coding', dsType: 'array', implemented: false },
-          { id: 'jobScheduling', name: 'Job Scheduling', dsType: 'array', implemented: false },
+          { id: 'activitySelection', name: 'Activity Selection', dsType: 'array', implemented: true, generator: activitySelection, code: activitySelectionCode },
+          { id: 'fractionalKnapsack', name: 'Fractional Knapsack', dsType: 'array', implemented: true, generator: fractionalKnapsack, code: fractionalKnapsackCode },
+          { id: 'huffmanCoding', name: 'Huffman Coding', dsType: 'array', implemented: true, generator: huffmanCoding, code: huffmanCodingCode },
+          { id: 'jobScheduling', name: 'Job Scheduling', dsType: 'array', implemented: true, generator: jobScheduling, code: jobSchedulingCode },
         ]
       }
     ]
@@ -266,9 +295,9 @@ export const catalog: CatalogCategory[] = [
       {
         name: '🔹 Bit Operations',
         algorithms: [
-          { id: 'xorTricks', name: 'XOR tricks', dsType: 'array', implemented: false },
-          { id: 'subsetsBits', name: 'Subsets using bits', dsType: 'array', implemented: false },
-          { id: 'powerOf2', name: 'Power of 2 checks', dsType: 'array', implemented: false },
+          { id: 'xorTricks', name: 'XOR tricks', dsType: 'array', implemented: true, generator: xorTricks, code: xorTricksCode },
+          { id: 'subsetsBits', name: 'Subsets using bits', dsType: 'array', implemented: true, generator: subsetsBits, code: subsetsBitsCode },
+          { id: 'powerOf2', name: 'Power of 2 checks', dsType: 'array', implemented: true, generator: powerOf2, code: powerOf2Code },
         ]
       }
     ]
@@ -280,10 +309,10 @@ export const catalog: CatalogCategory[] = [
       {
         name: '🔹 Heap Algorithms',
         algorithms: [
-          { id: 'minMaxHeap', name: 'Min Heap / Max Heap', dsType: 'array', implemented: false },
-          { id: 'heapSort2', name: 'Heap Sort', dsType: 'array', implemented: false },
-          { id: 'kthLargest', name: 'Kth Largest Element', dsType: 'array', implemented: false },
-          { id: 'mergeKSorted', name: 'Merge K Sorted Lists', dsType: 'array', implemented: false },
+          { id: 'minMaxHeap', name: 'Min Heap / Max Heap', dsType: 'array', implemented: true, generator: minMaxHeap, code: minMaxHeapCode },
+          { id: 'heapSort2', name: 'Heap Sort', dsType: 'array', implemented: true, generator: heapSort2, code: heapSort2Code },
+          { id: 'kthLargest', name: 'Kth Largest Element', dsType: 'array', implemented: true, generator: kthLargest, code: kthLargestCode },
+          { id: 'mergeKSorted', name: 'Merge K Sorted Lists', dsType: 'array', implemented: true, generator: mergeKSorted, code: mergeKSortedCode },
         ]
       }
     ]
@@ -295,10 +324,10 @@ export const catalog: CatalogCategory[] = [
       {
         name: '🔹 Number Theory',
         algorithms: [
-          { id: 'sieve', name: 'Sieve of Eratosthenes', dsType: 'array', implemented: false },
-          { id: 'gcd', name: 'GCD (Euclid’s Algorithm)', dsType: 'array', implemented: false },
-          { id: 'modularArithmetic', name: 'Modular Arithmetic', dsType: 'array', implemented: false },
-          { id: 'fastExponentiation', name: 'Fast Exponentiation', dsType: 'array', implemented: false },
+          { id: 'sieve', name: 'Sieve of Eratosthenes', dsType: 'array', implemented: true, generator: sieve, code: sieveCode },
+          { id: 'gcd', name: 'GCD (Euclid’s Algorithm)', dsType: 'array', implemented: true, generator: gcd, code: gcdCode },
+          { id: 'modularArithmetic', name: 'Modular Arithmetic', dsType: 'array', implemented: true, generator: modularArithmetic, code: modularArithmeticCode },
+          { id: 'fastExponentiation', name: 'Fast Exponentiation', dsType: 'array', implemented: true, generator: fastExponentiation, code: fastExponentiationCode },
         ]
       }
     ]

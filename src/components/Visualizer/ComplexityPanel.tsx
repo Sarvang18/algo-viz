@@ -37,6 +37,40 @@ export const ComplexityPanel: React.FC = () => {
     permutations: { time: 'O(N * N!)', space: 'O(N)', name: 'Permutations / Combinations' },
     subsetGen: { time: 'O(N * 2^N)', space: 'O(N)', name: 'Subset Generation' },
 
+    // Dynamic Programming
+    fibonacciDp: { time: 'O(N)', space: 'O(N)', name: 'Fibonacci DP' },
+    climbingStairs: { time: 'O(N)', space: 'O(N)', name: 'Climbing Stairs' },
+    knapsack: { time: 'O(N * W)', space: 'O(W)', name: '0/1 Knapsack' },
+    lcs: { time: 'O(M * N)', space: 'O(M * N)', name: 'Longest Common Subsequence' },
+    lis: { time: 'O(N²)', space: 'O(N)', name: 'Longest Increasing Subsequence' },
+    editDistance: { time: 'O(M * N)', space: 'O(M * N)', name: 'Edit Distance' },
+    dpTrees: { time: 'O(N)', space: 'O(H)', name: 'DP on Trees' },
+    dpGrids: { time: 'O(R * C)', space: 'O(R * C)', name: 'DP on Grids' },
+    bitmaskDp: { time: 'O(N * 2^N)', space: 'O(2^N)', name: 'Bitmask DP' },
+
+    // Greedy
+    activitySelection: { time: 'O(N log N)', space: 'O(1)', name: 'Activity Selection' },
+    fractionalKnapsack: { time: 'O(N log N)', space: 'O(1)', name: 'Fractional Knapsack' },
+    huffmanCoding: { time: 'O(N log N)', space: 'O(N)', name: 'Huffman Coding' },
+    jobScheduling: { time: 'O(N² )', space: 'O(N)', name: 'Job Scheduling' },
+
+    // Bit Manipulation
+    xorTricks: { time: 'O(N)', space: 'O(1)', name: 'XOR Tricks' },
+    subsetsBits: { time: 'O(N * 2^N)', space: 'O(1)', name: 'Subsets Using Bits' },
+    powerOf2: { time: 'O(1)', space: 'O(1)', name: 'Power of 2 Check' },
+
+    // Heaps & Priority Queues
+    minMaxHeap: { time: 'O(N log N)', space: 'O(N)', name: 'Min/Max Heap' },
+    heapSort2: { time: 'O(N log N)', space: 'O(1)', name: 'Heap Sort' },
+    kthLargest: { time: 'O(N log K)', space: 'O(K)', name: 'Kth Largest Element' },
+    mergeKSorted: { time: 'O(N log K)', space: 'O(K)', name: 'Merge K Sorted Lists' },
+
+    // Mathematical / Number Theory
+    sieve: { time: 'O(N log log N)', space: 'O(N)', name: 'Sieve of Eratosthenes' },
+    gcd: { time: 'O(log min(a,b))', space: 'O(1)', name: 'GCD (Euclid)' },
+    modularArithmetic: { time: 'O(log N)', space: 'O(1)', name: 'Modular Arithmetic' },
+    fastExponentiation: { time: 'O(log N)', space: 'O(1)', name: 'Fast Exponentiation' },
+
     // Trees
     levelOrder: { time: 'O(N)', space: 'O(N)', name: 'Level Order (BFS)' },
     heightDepth: { time: 'O(N)', space: 'O(H)', name: 'Height / Depth' },
