@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { ArrayVisualizer } from './components/Visualizer/ArrayVisualizer';
 import { TreeVisualizer } from './components/Visualizer/TreeVisualizer';
 import { HanoiVisualizer } from './components/Visualizer/HanoiVisualizer';
@@ -16,6 +16,7 @@ import { SearchModal } from './components/Navigation/SearchModal';
 import { clearAlgorithm } from './store/visualizerSlice';
 import type { RootState } from './store/store';
 import { ChatbotWidget } from './components/Chatbot/ChatbotWidget';
+import { VideoExporter } from './components/Controls/VideoExporter';
 
 function App() {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ function App() {
   
   const [inputArray, setInputArray] = useState([34, 12, 5, 9, 42, 67, 23, 1, 88, 55, 10, 2]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const exportTargetRef = useRef<HTMLDivElement>(null);
 
   const activeAlgoObj = currentAlgorithm ? getAlgorithmById(currentAlgorithm) : null;
 
@@ -133,10 +135,13 @@ function App() {
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md bg-black/40 overflow-hidden relative min-w-0">
-          <div className="h-14 border-b border-white/5 flex items-center px-6 gap-3 shrink-0 bg-white/5 z-10">
-             <Database size={18} className="text-purple-400" />
-             <h2 className="font-semibold text-gray-200 tracking-wide">Execution Timeline</h2>
+        <div ref={exportTargetRef} className="flex-1 flex flex-col rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md bg-black/40 overflow-hidden relative min-w-0">
+          <div className="h-14 border-b border-white/5 flex items-center justify-between px-6 shrink-0 bg-white/5 z-10">
+             <div className="flex items-center gap-3">
+               <Database size={18} className="text-purple-400" />
+               <h2 className="font-semibold text-gray-200 tracking-wide">Execution Timeline</h2>
+             </div>
+             <VideoExporter targetRef={exportTargetRef} />
           </div>
           
           <div className="flex-1 flex items-center justify-center p-8 overflow-hidden relative">
