@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SearchModal } from './components/Navigation/SearchModal';
 import { clearAlgorithm } from './store/visualizerSlice';
 import type { RootState } from './store/store';
+import { ChatbotWidget } from './components/Chatbot/ChatbotWidget';
 
 function App() {
   const dispatch = useDispatch();
@@ -60,6 +61,7 @@ function App() {
       <>
         <LandingPage />
         <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+        <ChatbotWidget />
       </>
     );
   }
@@ -67,6 +69,7 @@ function App() {
   return (
     <div className="flex bg-[#0a0a0f] h-screen text-gray-100 flex-col overflow-hidden font-sans w-full relative">
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <ChatbotWidget />
       
       {/* Dynamic Background */}
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none" />
