@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 
-export default async function handler(req, res) {
+export default async function handler(req: any, res: any) {
   // CORS Headers for potentially calling from other domains if needed
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
   try {
     const { history = [], message, context } = req.body;
 
-    const apiKey = process.env.GEMINI_API_KEY || 'AIzaSyCVTOn76vllmdE3kj1qK0Etk-AC2-uK8Rc';
+    const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
       return res.status(500).json({ error: 'GEMINI_API_KEY is not configured.' });
@@ -39,7 +39,7 @@ Rules:
 3. Keep your answers focused on Data Structures, Algorithms, time/space complexity, and related computer science concepts.
 4. If the user asks something off-topic, politely pivot back to DSA.`;
 
-    const formattedHistory = history.map((msg) => ({
+    const formattedHistory = history.map((msg: { role: string; text: string }) => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.text }]
     }));
@@ -51,7 +51,7 @@ Rules:
     });
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-flash-latest',
       contents: formattedHistory,
       config: {
         systemInstruction,
