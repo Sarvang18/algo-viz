@@ -20,7 +20,8 @@ export default async function handler(req: any, res: any) {
   try {
     const { history = [], message, context } = req.body;
 
-    const apiKey = process.env.GROQ_API_KEY;
+    // Defend against keys pasted with surrounding quotes or stray whitespace
+    const apiKey = process.env.GROQ_API_KEY?.trim().replace(/^["']|["']$/g, '');
 
     if (!apiKey) {
       return res.status(500).json({ error: 'GROQ_API_KEY is not configured.' });
@@ -61,7 +62,11 @@ Rules:
     if (!response.ok) {
       const errText = await response.text();
       console.error('Groq API Error:', response.status, errText);
-      return res.status(500).json({ error: 'Failed to generate response' });
+      return res.status(500).json({
+        error: 'Failed to generate response',
+        upstreamStatus: response.status,
+        upstreamMessage: errText.slice(0, 300)
+      });
     }
 
     const data = await response.json();
