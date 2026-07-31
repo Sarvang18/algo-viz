@@ -73,7 +73,7 @@ export const ChatbotWidget: React.FC = () => {
       const errorMsg: Message = { 
         id: (Date.now() + 1).toString(), 
         role: 'bot', 
-        text: "Sorry, I'm having trouble connecting to the brain right now. Make sure `GEMINI_API_KEY` is configured." 
+        text: "Sorry, I'm having trouble connecting to the brain right now. Make sure `GROQ_API_KEY` is configured." 
       };
       setMessages(prev => [...prev, errorMsg]);
     } finally {

@@ -1,5 +1,3 @@
-import { GoogleGenAI } from '@google/genai';
-
 export default async function handler(req: any, res: any) {
   // CORS Headers for potentially calling from other domains if needed
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -22,13 +20,11 @@ export default async function handler(req: any, res: any) {
   try {
     const { history = [], message, context } = req.body;
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GROQ_API_KEY;
 
     if (!apiKey) {
-      return res.status(500).json({ error: 'GEMINI_API_KEY is not configured.' });
+      return res.status(500).json({ error: 'GROQ_API_KEY is not configured.' });
     }
-
-    const ai = new GoogleGenAI({ apiKey });
 
     const systemInstruction = `You are "AlgoBot", an expert tutor in Data Structures and Algorithms. You are integrated into a visualization platform to help a student learn.
 Context about what the user is currently doing: ${context ? context : "The user is on the main dashboard, not viewing a specific algorithm."}
@@ -39,28 +35,40 @@ Rules:
 3. Keep your answers focused on Data Structures, Algorithms, time/space complexity, and related computer science concepts.
 4. If the user asks something off-topic, politely pivot back to DSA.`;
 
-    const formattedHistory = history.map((msg: { role: string; text: string }) => ({
-      role: msg.role === 'user' ? 'user' : 'model',
-      parts: [{ text: msg.text }]
-    }));
+    const messages = [
+      { role: 'system', content: systemInstruction },
+      ...history.map((msg: { role: string; text: string }) => ({
+        role: msg.role === 'user' ? 'user' : 'assistant',
+        content: msg.text
+      })),
+      { role: 'user', content: message }
+    ];
 
-    // Add current message
-    formattedHistory.push({
-      role: 'user',
-      parts: [{ text: message }]
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages,
+        temperature: 0.7,
+        max_tokens: 1024
+      })
     });
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-flash-latest',
-      contents: formattedHistory,
-      config: {
-        systemInstruction,
-      }
-    });
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('Groq API Error:', response.status, errText);
+      return res.status(500).json({ error: 'Failed to generate response' });
+    }
 
-    return res.status(200).json({ reply: response.text });
+    const data = await response.json();
+
+    return res.status(200).json({ reply: data.choices?.[0]?.message?.content ?? '' });
   } catch (error) {
-    console.error("Gemini API Error:", error);
+    console.error('Groq API Error:', error);
     return res.status(500).json({ error: 'Failed to generate response' });
   }
 }
