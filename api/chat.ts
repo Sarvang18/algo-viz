@@ -72,8 +72,14 @@ Rules:
     const data = await response.json();
 
     return res.status(200).json({ reply: data.choices?.[0]?.message?.content ?? '' });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Groq API Error:', error);
-    return res.status(500).json({ error: 'Failed to generate response' });
+    return res.status(500).json({
+      error: 'Failed to generate response',
+      stage: 'exception',
+      detail: String(error?.message ?? error).slice(0, 300),
+      bodyType: typeof req.body,
+      hasKey: Boolean(process.env.GROQ_API_KEY)
+    });
   }
 }
