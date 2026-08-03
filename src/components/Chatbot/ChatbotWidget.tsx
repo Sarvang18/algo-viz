@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { ChatMessage, type Message } from './ChatMessage';
 import type { RootState } from '../../store/store';
 import { getAlgorithmById } from '../../engine/catalog';
+import { sendChatRequest, type ChatRequestPayload } from './chatClient';
 
 export const ChatbotWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +14,7 @@ export const ChatbotWidget: React.FC = () => {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [serviceState, setServiceState] = useState<'idle' | 'available' | 'error'>('idle');
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
@@ -38,28 +40,22 @@ export const ChatbotWidget: React.FC = () => {
     setIsLoading(true);
 
     // Format history for the API (except the last user message which is handled separately)
-    const history = messages.map(msg => ({
+    const history: ChatRequestPayload['history'] = messages.map(msg => ({
       role: msg.role === 'bot' ? 'assistant' : 'user',
       text: msg.text
     }));
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: userMsg.text,
-          history,
-          algorithm: activeAlgoObj?.name ?? null,
-        })
+      const reply = await sendChatRequest({
+        message: userMsg.text,
+        history,
+        algorithm: activeAlgoObj?.name ?? null,
       });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(typeof data.error === 'string' ? data.error : 'Chat request failed.');
-      
-      const botMsg: Message = { id: (Date.now() + 1).toString(), role: 'bot', text: data.reply || "No response generated." };
+      setServiceState('available');
+      const botMsg: Message = { id: (Date.now() + 1).toString(), role: 'bot', text: reply };
       setMessages(prev => [...prev, botMsg]);
     } catch (error) {
+      setServiceState('error');
       const message = error instanceof Error ? error.message : 'Chat request failed.';
       const errorMsg: Message = { 
         id: (Date.now() + 1).toString(), 
@@ -92,9 +88,13 @@ export const ChatbotWidget: React.FC = () => {
                  </div>
                  <div>
                    <h3 className="font-semibold text-gray-100 text-sm tracking-wide">AlgoBot</h3>
-                   <div className="text-[10px] text-green-400 flex items-center gap-1">
-                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                     {activeAlgoObj ? `Context: ${activeAlgoObj.name}` : 'Online'}
+                   <div className={`flex items-center gap-1 text-[10px] ${serviceState === 'error' ? 'text-red-400' : 'text-green-400'}`}>
+                     <span className={`h-1.5 w-1.5 rounded-full ${serviceState === 'error' ? 'bg-red-500' : 'bg-green-500'}`}></span>
+                     {serviceState === 'error'
+                       ? 'Connection issue'
+                       : activeAlgoObj
+                         ? `Context: ${activeAlgoObj.name}`
+                         : serviceState === 'available' ? 'Connected' : 'Ready'}
                    </div>
                  </div>
                </div>

@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "test": "node --no-warnings --experimental-strip-types --test tests/algorithms.test.mjs tests/chatCore.test.mjs tests/languages.test.mjs tests/smoke.test.mjs",
+    "test": "node --no-warnings --experimental-strip-types --test tests/algorithms.test.mjs tests/chatClient.test.mjs tests/chatCore.test.mjs tests/languages.test.mjs tests/smoke.test.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

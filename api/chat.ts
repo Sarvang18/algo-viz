@@ -1,4 +1,4 @@
-import { ChatRequestError, parseChatPayload, requestChatCompletion } from './chatCore.ts';
+import { ChatRequestError, parseChatPayload, requestChatCompletion } from './chatCore.js';
 
 type HeaderValue = string | string[] | undefined;
 
