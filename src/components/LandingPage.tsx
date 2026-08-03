@@ -12,6 +12,7 @@ const AccordionItem: React.FC<{ sub: SubCategory, onSelect: (algo: AlgorithmMeta
   return (
     <div className="border border-white/10 rounded-xl overflow-hidden mb-3 bg-white/5 transition-colors duration-300">
       <button 
+        aria-expanded={isOpen}
         onClick={() => setIsOpen(!isOpen)} 
         className="w-full flex items-center justify-between px-4 py-3 bg-transparent hover:bg-white/5 transition-colors cursor-pointer"
       >
@@ -76,10 +77,11 @@ export const LandingPage: React.FC = () => {
             algo<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">.platform</span>
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto font-medium mb-10">
-            Master 100+ Data Structures & Algorithms with Interactive Visualizations.
+            Explore 75+ data structures and algorithms through interactive visualizations.
           </p>
 
           <button 
+            aria-label="Search algorithms"
             onClick={() => window.dispatchEvent(new CustomEvent('toggle-search-modal'))}
             className="group relative w-full max-w-lg mx-auto flex items-center bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-2xl px-6 py-4 transition-all duration-300 shadow-2xl overflow-hidden cursor-text"
           >

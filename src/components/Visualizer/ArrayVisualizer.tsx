@@ -15,12 +15,12 @@ export const ArrayVisualizer: React.FC = () => {
   const array = currentStep.snapshot.data;
 
   const isStringArray = array.length > 0 && typeof array[0] === 'string';
-  const maxVal = isStringArray ? 1 : Math.max(...(array as number[]));
+  const maxVal = isStringArray ? 1 : Math.max(1, ...(array as number[]).map((value) => Math.abs(value)));
 
   return (
     <div className={`flex ${isStringArray ? 'items-center flex-wrap gap-2' : 'items-end flex-nowrap gap-1 sm:gap-2'} justify-center w-full h-80 px-4`}>
       {array.map((value, index) => {
-        const heightPercent = isStringArray ? 100 : ((value as number) / maxVal) * 100;
+        const heightPercent = isStringArray ? 100 : (Math.abs(value as number) / maxVal) * 100;
         
         let colorClass = 'bg-white/10 border-white/20 text-white/50';
         let glow = '';
@@ -30,6 +30,7 @@ export const ArrayVisualizer: React.FC = () => {
           if (currentStep.action === 'swap') { colorClass = 'bg-red-500/30 border-red-500 text-red-200'; glow = 'shadow-[0_0_25px_rgba(239,68,68,0.6)] z-10 scale-110'; }
           if (currentStep.action === 'found') { colorClass = 'bg-green-500/30 border-green-500 text-green-200'; glow = 'shadow-[0_0_25px_rgba(34,197,94,0.6)] z-10 scale-105'; }
           if (currentStep.action === 'highlight') { colorClass = 'bg-blue-400/40 border-blue-400 text-white'; glow = 'shadow-[0_0_25px_rgba(96,165,250,0.6)] z-10 scale-105'; }
+          if (currentStep.action === 'visit' || currentStep.action === 'pointer') { colorClass = 'bg-purple-400/40 border-purple-400 text-white'; glow = 'shadow-[0_0_25px_rgba(192,132,252,0.6)] z-10 scale-105'; }
         }
         
         if (value === '|' && isStringArray) {

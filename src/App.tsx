@@ -1,10 +1,10 @@
-import { useEffect, useState, useRef } from 'react';
+import { lazy, Suspense, useEffect, useState, useRef } from 'react';
 import { ArrayVisualizer } from './components/Visualizer/ArrayVisualizer';
 import { TreeVisualizer } from './components/Visualizer/TreeVisualizer';
 import { HanoiVisualizer } from './components/Visualizer/HanoiVisualizer';
 import { MatrixVisualizer } from './components/Visualizer/MatrixVisualizer';
+import { GraphVisualizer } from './components/Visualizer/GraphVisualizer';
 import { PlaybackControls } from './components/Controls/PlaybackControls';
-import { CodeEditor } from './components/Editor/CodeEditor';
 import { VariablesPanel } from './components/Visualizer/VariablesPanel';
 import { ComplexityPanel } from './components/Visualizer/ComplexityPanel';
 import { LandingPage } from './components/LandingPage';
@@ -17,6 +17,39 @@ import { clearAlgorithm } from './store/visualizerSlice';
 import type { RootState } from './store/store';
 import { ChatbotWidget } from './components/Chatbot/ChatbotWidget';
 import { VideoExporter } from './components/Controls/VideoExporter';
+import type { DSNode } from './engine/Step';
+
+const CodeEditor = lazy(() => import('./components/Editor/CodeEditor').then((module) => ({ default: module.CodeEditor })));
+
+const createRandomInput = (algorithmId: string): number[] => {
+  if (algorithmId === 'threeSum') {
+    const first = Math.floor(Math.random() * 30) + 1;
+    const second = Math.floor(Math.random() * 30) + 1;
+    const values = [-first, -second, first + second];
+    while (values.length < 12) values.push(Math.floor(Math.random() * 81) - 40);
+    return values;
+  }
+
+  const unique = new Set<number>();
+  while (unique.size < 12) unique.add(Math.floor(Math.random() * 99) + 1);
+  return [...unique];
+};
+
+const buildBalancedTree = (values: number[]): { root: string; nodes: Record<string, DSNode> } => {
+  const sorted = [...new Set(values)].sort((a, b) => a - b);
+  while (sorted.length < 7) sorted.push((sorted.at(-1) ?? 0) + 1);
+  const selected = sorted.slice(0, 7);
+  const nodes: Record<string, DSNode> = {
+    '1': { id: '1', value: selected[3], left: '2', right: '3' },
+    '2': { id: '2', value: selected[1], left: '4', right: '5' },
+    '3': { id: '3', value: selected[5], left: '6', right: '7' },
+    '4': { id: '4', value: selected[0] },
+    '5': { id: '5', value: selected[2] },
+    '6': { id: '6', value: selected[4] },
+    '7': { id: '7', value: selected[6] },
+  };
+  return { root: '1', nodes };
+};
 
 function App() {
   const dispatch = useDispatch();
@@ -38,23 +71,20 @@ function App() {
     if (!activeAlgoObj || !activeAlgoObj.generator) return;
 
     if (activeAlgoObj.dsType === 'array') {
-      runAlgorithm(activeAlgoObj.generator as any, inputArray, { type: 'array', data: [...inputArray] });
+      const algorithmInput = activeAlgoObj.id === 'threeSum' && inputArray.every((value) => value > 0)
+        ? [-25, -10, -7, -3, 2, 5, 8, 10, 15, 17, 20, 25]
+        : inputArray;
+      runAlgorithm(activeAlgoObj.generator, algorithmInput, { type: 'array', data: [...algorithmInput] });
     } else if (activeAlgoObj.dsType === 'hanoi') {
       const disks = [4, 3, 2, 1]; // Setup 4 explicit disks
-      runAlgorithm(activeAlgoObj.generator as any, 4, { type: 'hanoi', pegs: [disks, [], []] });
+      runAlgorithm(activeAlgoObj.generator, 4, { type: 'hanoi', pegs: [disks, [], []] });
     } else if (activeAlgoObj.dsType === 'matrix') {
-      runAlgorithm(activeAlgoObj.generator as any, null, { type: 'matrix', data: [], boardType: 'chess' });
+      runAlgorithm(activeAlgoObj.generator, null, { type: 'matrix', data: [], boardType: 'grid' });
+    } else if (activeAlgoObj.dsType === 'graph') {
+      runAlgorithm(activeAlgoObj.generator, null, { type: 'graph', nodes: [], edges: [], directed: true });
     } else if (activeAlgoObj.dsType === 'tree') {
-      const nodes: Record<string, any> = {
-        '1': { id: '1', value: inputArray[0]*2, left: '2', right: '3' },
-        '2': { id: '2', value: inputArray[1], left: '4', right: '5' },
-        '3': { id: '3', value: inputArray[2], left: '6', right: '7' },
-        '4': { id: '4', value: inputArray[3] },
-        '5': { id: '5', value: inputArray[4] },
-        '6': { id: '6', value: inputArray[5] },
-        '7': { id: '7', value: inputArray[6] },
-      };
-      runAlgorithm(activeAlgoObj.generator as any, { root: '1', nodes }, { type: 'tree', root: '1', nodes });
+      const tree = buildBalancedTree(inputArray);
+      runAlgorithm(activeAlgoObj.generator, tree, { type: 'tree', ...tree });
     }
   }, [inputArray, currentAlgorithm, activeAlgoObj]);
 
@@ -69,7 +99,7 @@ function App() {
   }
 
   return (
-    <div className="flex bg-[#0a0a0f] h-screen text-gray-100 flex-col overflow-hidden font-sans w-full relative">
+    <div className="relative flex min-h-screen w-full flex-col overflow-auto bg-[#0a0a0f] font-sans text-gray-100 xl:h-screen xl:overflow-hidden">
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
       <ChatbotWidget />
       
@@ -78,9 +108,10 @@ function App() {
       <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Top Navbar */}
-      <header className="h-[72px] flex items-center px-8 bg-white/5 border-b border-white/10 shrink-0 backdrop-blur-xl z-20 w-full relative justify-between">
+      <header className="relative z-20 flex min-h-[72px] w-full shrink-0 flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-white/5 px-4 py-3 backdrop-blur-xl md:px-8">
         <div className="flex items-center gap-6">
           <button 
+             aria-label="Return to algorithm catalog"
              onClick={() => dispatch(clearAlgorithm())}
              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
           >
@@ -99,8 +130,9 @@ function App() {
 
         <div className="flex items-center gap-4">
           <button
+            aria-label="Search algorithms"
             onClick={() => setIsSearchOpen(true)}
-            className="flex items-center justify-between w-48 px-3 py-1.5 bg-black/40 border border-white/10 hover:border-white/30 rounded-lg text-gray-400 hover:text-white transition-all shadow-inner text-xs cursor-pointer"
+            className="hidden w-48 items-center justify-between rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-gray-400 shadow-inner transition-all hover:border-white/30 hover:text-white sm:flex"
           >
             <div className="flex items-center gap-2">
               <Search size={14} />
@@ -111,23 +143,22 @@ function App() {
             </div>
           </button>
           
-          <button 
-            onClick={() => {
-              const newArr = Array.from({length: 12}, () => Math.floor(Math.random() * 100) + 1);
-              setInputArray(newArr);
-            }}
-            className="px-5 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-xs font-semibold tracking-wider uppercase transition-all duration-300 border border-white/10 shadow-lg backdrop-blur-md cursor-pointer hover:border-blue-500/30"
-          >
-            Randomize Input
-          </button>
+          {activeAlgoObj.randomizable && (
+            <button
+              onClick={() => setInputArray(createRandomInput(activeAlgoObj.id))}
+              className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold uppercase tracking-wider shadow-lg backdrop-blur-md transition-all duration-300 hover:border-blue-500/30 hover:bg-white/10 md:px-5"
+            >
+              New Example
+            </button>
+          )}
         </div>
       </header>
 
       {/* Main Dashboard Layout */}
-      <main className="flex-1 flex overflow-hidden p-6 gap-6 w-full z-10 relative">
-        <div className="w-[480px] flex gap-6 flex-col shrink-0 h-full">
-          <div className="flex-1 min-h-[300px] relative rounded-2xl overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md bg-black/40">
-             <CodeEditor />
+      <main className="relative z-10 flex w-full flex-1 flex-col gap-4 overflow-visible p-3 md:gap-6 md:p-6 xl:flex-row xl:overflow-hidden">
+        <div className="flex h-[700px] w-full shrink-0 flex-col gap-4 md:gap-6 xl:h-full xl:w-[480px]">
+          <div className="relative min-h-[300px] flex-1 overflow-hidden rounded-2xl border border-white/10 bg-black/40 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md">
+             <Suspense fallback={<div className="grid h-full place-items-center text-sm text-white/40">Loading code editor…</div>}><CodeEditor /></Suspense>
           </div>
           <div className="shrink-0 flex gap-6 h-[30%] min-h-[160px]">
              <div className="flex-1 rounded-2xl overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md bg-black/40"><VariablesPanel /></div>
@@ -135,7 +166,7 @@ function App() {
           </div>
         </div>
 
-        <div ref={exportTargetRef} className="flex-1 flex flex-col rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md bg-black/40 overflow-hidden relative min-w-0">
+        <div ref={exportTargetRef} className="relative flex min-h-[650px] min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/40 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md xl:min-h-0">
           <div className="h-14 border-b border-white/5 flex items-center justify-between px-6 shrink-0 bg-white/5 z-10">
              <div className="flex items-center gap-3">
                <Database size={18} className="text-purple-400" />
@@ -151,6 +182,7 @@ function App() {
               {dsType === 'tree' && <TreeVisualizer />}
               {dsType === 'hanoi' && <HanoiVisualizer />}
               {dsType === 'matrix' && <MatrixVisualizer />}
+              {dsType === 'graph' && <GraphVisualizer />}
             </div>
           </div>
           

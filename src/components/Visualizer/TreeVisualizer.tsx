@@ -20,7 +20,7 @@ export const TreeVisualizer: React.FC = () => {
   const levelHeight = 70;
   
   const traverse = (nodeId: string | null, depth: number, offset: number, span: number) => {
-    if (!nodeId) return null;
+    if (!nodeId || !nodes[nodeId]) return null;
     const px = offset;
     const py = depth * levelHeight + 50;
     
@@ -38,13 +38,13 @@ export const TreeVisualizer: React.FC = () => {
     return { px, py };
   };
 
-  traverse(root, 0, 300, 160); // Base root offset assuming typical dashboard width
+  traverse(root, 0, 50, 50);
   
   return (
      <div className="relative w-full h-full flex items-start justify-center overflow-auto p-4">
        <svg className="absolute top-0 left-0 w-full h-full pointer-events-none">
          {links.map((link, i) => (
-            <line key={i} x1={link.from.x} y1={link.from.y} x2={link.to.x} y2={link.to.y} stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
+            <line key={i} x1={`${link.from.x}%`} y1={link.from.y} x2={`${link.to.x}%`} y2={link.to.y} stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
          ))}
        </svg>
        {layoutNodes.map((node) => {
@@ -66,6 +66,17 @@ export const TreeVisualizer: React.FC = () => {
             textColor = 'text-green-400';
             glow = 'shadow-[0_0_25px_rgba(74,222,128,0.6)]';
           }
+          if (currentStep.action === 'visit' || currentStep.action === 'highlight' || currentStep.action === 'pointer') {
+            borderColor = 'border-purple-400';
+            bgColor = 'bg-purple-400/20';
+            textColor = 'text-purple-300';
+            glow = 'shadow-[0_0_25px_rgba(192,132,252,0.6)]';
+          }
+          if (currentStep.action === 'swap') {
+            borderColor = 'border-red-400';
+            bgColor = 'bg-red-400/20';
+            textColor = 'text-red-300';
+          }
         }
 
         return (
@@ -75,7 +86,7 @@ export const TreeVisualizer: React.FC = () => {
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             className={`absolute flex flex-col items-center justify-center w-12 h-12 rounded-full border-2 backdrop-blur-md z-10 transition-all duration-300 ${borderColor} ${bgColor} ${glow}`}
-            style={{ left: node.px - 24, top: node.py - 24 }} // center shift
+            style={{ left: `calc(${node.px}% - 24px)`, top: node.py - 24 }}
           >
             <span className={`font-bold text-sm ${textColor}`}>{node.value}</span>
           </motion.div>

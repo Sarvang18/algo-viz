@@ -1,5 +1,5 @@
 export type StepAction = "compare" | "swap" | "visit" | "highlight" | "found" | "custom" | "pointer";
-export type DSType = 'array' | 'tree' | 'hanoi' | 'matrix';
+export type DSType = 'array' | 'tree' | 'hanoi' | 'matrix' | 'graph';
 
 export interface DSNode {
   id: string;
@@ -10,11 +10,33 @@ export interface DSNode {
   y?: number;
 }
 
+export interface GraphNode {
+  id: string;
+  label: string;
+  x: number;
+  y: number;
+}
+
+export interface GraphEdge {
+  id: string;
+  from: string;
+  to: string;
+  weight?: number;
+}
+
+export interface TreeInput {
+  root: string | null;
+  nodes: Record<string, DSNode>;
+}
+
+export type AlgorithmInput = number[] | number | TreeInput | null;
+
 export type DSSnapshot = 
   | { type: 'array', data: (number | string)[] }
   | { type: 'tree', root: string | null, nodes: Record<string, DSNode> }
   | { type: 'hanoi', pegs: number[][] }
-  | { type: 'matrix', data: (string|number|null)[][], boardType: 'chess' | 'sudoku' | 'grid' };
+  | { type: 'matrix', data: (string|number|null)[][], boardType: 'chess' | 'sudoku' | 'grid' }
+  | { type: 'graph', nodes: GraphNode[], edges: GraphEdge[], directed: boolean };
 
 export interface Step<T = DSSnapshot> {
   action: StepAction;
@@ -22,6 +44,6 @@ export interface Step<T = DSSnapshot> {
   snapshot: T;
   meta: {
     line: number;
-    vars: Record<string, any>;
+    vars: Record<string, unknown>;
   };
 }

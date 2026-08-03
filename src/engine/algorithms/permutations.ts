@@ -2,7 +2,7 @@ import type { Step, DSSnapshot } from '../Step';
 
 export function* permutations(arr: number[]): Generator<Step<DSSnapshot>, void, unknown> {
   const state = [...arr].slice(0, 4); // Limit to 4 executing 24 sequences cleanly instead of crashing at 10!
-  let result: number[][] = [];
+  const result: number[][] = [];
   
   yield { action: "custom", indices: [], snapshot: { type: 'array', data: [...state] }, meta: { line: 1, vars: { input: JSON.stringify(state) } } };
 

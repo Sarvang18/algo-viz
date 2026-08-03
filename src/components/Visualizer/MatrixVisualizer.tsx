@@ -25,8 +25,8 @@ export const MatrixVisualizer: React.FC = () => {
         className={`grid ${isSudoku ? 'gap-[1.5px] bg-white/20 border-2 border-white/20 p-0.5' : 'border-4 border-gray-800 shadow-2xl drop-shadow-2xl'}`} 
         style={{ 
           gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))`,
-          width: isSudoku ? '450px' : '400px',
-          height: isSudoku ? '450px' : '400px'
+          width: isSudoku ? 'min(450px, 100%)' : 'min(400px, 100%)',
+          aspectRatio: '1 / 1'
         }}
       >
         {data.map((row, rIndex) => (
@@ -54,6 +54,7 @@ export const MatrixVisualizer: React.FC = () => {
                if (currentStep.action === 'compare') bgColor = 'bg-blue-400';
                if (currentStep.action === 'swap') bgColor = 'bg-red-400';
                if (currentStep.action === 'found') bgColor = 'bg-green-400';
+               if (currentStep.action === 'visit' || currentStep.action === 'pointer') bgColor = 'bg-purple-400';
             }
             
             return (

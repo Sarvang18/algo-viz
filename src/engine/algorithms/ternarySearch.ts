@@ -5,8 +5,8 @@ export function* ternarySearch(arr: number[]): Generator<Step<DSSnapshot>, void,
   const target = state[Math.floor(state.length * 0.75)];
   let l = 0, r = state.length - 1;
   while(r >= l) {
-    let mid1 = l + Math.floor((r - l) / 3);
-    let mid2 = r - Math.floor((r - l) / 3);
+    const mid1 = l + Math.floor((r - l) / 3);
+    const mid2 = r - Math.floor((r - l) / 3);
     yield { action: "highlight", indices: [l, r], snapshot: { type: 'array', data: [...state] }, meta: { line: 5, vars: { l, r, mid1, mid2, target } } };
     yield { action: "compare", indices: [mid1, mid2], snapshot: { type: 'array', data: [...state] }, meta: { line: 6, vars: { l, r, mid1, mid2, target } } };
     

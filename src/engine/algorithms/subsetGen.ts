@@ -3,7 +3,7 @@ import type { Step, DSSnapshot } from '../Step';
 export function* subsetGen(arr: number[]): Generator<Step<DSSnapshot>, void, unknown> {
   const nums = [...arr].slice(0, 4); // Limit scaling safely.
   const state: number[] = [];
-  let subsets: number[][] = [];
+  const subsets: number[][] = [];
 
   yield { action: "custom", indices: [], snapshot: { type: 'array', data: [...state] }, meta: { line: 1, vars: { targetSet: JSON.stringify(nums) } } };
 

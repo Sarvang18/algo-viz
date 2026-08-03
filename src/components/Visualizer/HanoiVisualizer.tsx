@@ -14,17 +14,17 @@ export const HanoiVisualizer: React.FC = () => {
   const { pegs } = currentStep.snapshot;
   
   return (
-    <div className="w-full h-full flex flex-col items-center justify-end pb-12 relative px-10 bg-transparent">
+    <div className="relative flex h-full w-full flex-col items-center justify-end bg-transparent px-2 pb-12 sm:px-10">
       
-      <div className="flex flex-row items-end justify-center w-full max-w-4xl gap-16 md:gap-32">
+      <div className="flex w-full max-w-4xl flex-row items-end justify-center gap-2 sm:gap-10 lg:gap-24">
         {pegs.map((peg, pegIndex) => (
-          <div key={pegIndex} className="relative flex flex-col-reverse items-center justify-start w-32 h-64 border-b-[12px] border-white/10 rounded-b-xl drop-shadow-2xl opacity-90 transition-opacity">
+          <div key={pegIndex} className="relative flex h-64 w-24 flex-col-reverse items-center justify-start rounded-b-xl border-b-[12px] border-white/10 opacity-90 drop-shadow-2xl transition-opacity sm:w-32">
             {/* The rigid metallic center rod */}
             <div className="absolute bottom-0 w-3.5 h-[110%] bg-gradient-to-t from-gray-500/50 to-gray-400/20 rounded-t-full z-0 drop-shadow-lg" />
             
             {/* Dynamic Rendering Stack for animated execution */}
             {peg.map((disk) => {
-               const diskWidth = 50 + (disk * 25); 
+               const diskWidth = 40 + (disk * 18);
                
                return (
                  <motion.div

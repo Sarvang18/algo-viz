@@ -42,6 +42,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
 
   const results = query
@@ -50,11 +51,13 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
 
   // Reset state when opened
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) return;
+    const timer = window.setTimeout(() => {
       setQuery('');
       setSelectedIndex(0);
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
+      inputRef.current?.focus();
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [isOpen]);
 
   // Global keyboard shortcut
@@ -67,6 +70,21 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
           // Open modal - handled by parent via custom event or state
           // To keep it clean, we dispatch a custom event that App/LandingPage listens to
           window.dispatchEvent(new CustomEvent('toggle-search-modal'));
+        }
+      } else if (isOpen && e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      } else if (isOpen && e.key === 'Tab' && modalRef.current) {
+        const focusable = [...modalRef.current.querySelectorAll<HTMLElement>('button:not([disabled]), input, [tabindex]:not([tabindex="-1"])')];
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable.at(-1)!;
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
         }
       }
     };
@@ -93,9 +111,6 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
       if (results[selectedIndex]) {
         handleSelect(results[selectedIndex]);
       }
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      onClose();
     }
   };
 
@@ -104,6 +119,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4">
           <motion.div
+            aria-hidden="true"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -111,6 +127,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
             onClick={onClose}
           />
           <motion.div
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Search algorithms"
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
@@ -121,6 +141,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
             <div className="flex items-center px-4 py-4 border-b border-white/10 bg-white/5">
               <Search size={22} className="text-gray-400 mr-3 shrink-0" />
               <input
+                aria-label="Search algorithms, data structures, or topics"
                 ref={inputRef}
                 type="text"
                 placeholder="Search algorithms, data structures, or topics..."
@@ -133,6 +154,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
                 className="flex-1 bg-transparent border-none outline-none text-white text-lg placeholder:text-gray-500 font-medium"
               />
               <button 
+                aria-label="Close search"
                 onClick={onClose}
                 className="ml-3 p-1 rounded-md text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
               >
@@ -160,6 +182,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
                   return (
                     <button
                       key={algo.id}
+                      disabled={!algo.implemented}
+                      aria-current={isSelected ? 'true' : undefined}
                       onClick={() => handleSelect(algo)}
                       onMouseEnter={() => setSelectedIndex(index)}
                       className={`flex items-center justify-between w-full p-3 rounded-xl transition-all duration-200 text-left group

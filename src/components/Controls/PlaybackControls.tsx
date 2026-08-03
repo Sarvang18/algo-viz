@@ -56,11 +56,12 @@ export const PlaybackControls: React.FC = () => {
   return (
     <div className="flex flex-col items-center w-full px-4 gap-4 bg-gray-900 border-t border-gray-800 py-4 shadow-xl">
       <div className="flex items-center gap-6">
-        <button onClick={() => dispatch(stepBackward())} disabled={stepIndex === 0} className="text-gray-300 hover:text-white disabled:opacity-30 transition-colors">
+        <button aria-label="Previous step" onClick={() => dispatch(stepBackward())} disabled={stepIndex === 0} className="text-gray-300 hover:text-white disabled:opacity-30 transition-colors">
           <SkipBack size={24} />
         </button>
         
         <button 
+          aria-label={isPlaying ? 'Pause playback' : 'Play visualization'}
           onClick={() => isPlaying ? dispatch(pause()) : dispatch(play())} 
           disabled={steps.length === 0 || (stepIndex === steps.length - 1 && !isPlaying)}
           className="bg-blue-600 hover:bg-blue-500 text-white rounded-full p-3 flex items-center justify-center transition-all disabled:opacity-30 shadow-lg"
@@ -68,7 +69,7 @@ export const PlaybackControls: React.FC = () => {
           {isPlaying ? <Pause size={28} /> : <Play size={28} className="translate-x-[2px]" />}
         </button>
 
-        <button onClick={() => dispatch(stepForward())} disabled={stepIndex >= steps.length - 1} className="text-gray-300 hover:text-white disabled:opacity-30 transition-colors">
+        <button aria-label="Next step" onClick={() => dispatch(stepForward())} disabled={stepIndex >= steps.length - 1} className="text-gray-300 hover:text-white disabled:opacity-30 transition-colors">
           <SkipForward size={24} />
         </button>
       </div>
@@ -76,6 +77,7 @@ export const PlaybackControls: React.FC = () => {
       <div className="flex items-center w-full max-w-4xl gap-4 text-xs font-semibold text-gray-400 mt-2">
         <span className="whitespace-nowrap">Step: {stepIndex}/{steps.length > 0 ? steps.length - 1 : 0}</span>
         <input 
+          aria-label="Visualization step"
           type="range" 
           min={0} 
           max={steps.length > 0 ? steps.length - 1 : 0} 
@@ -87,6 +89,9 @@ export const PlaybackControls: React.FC = () => {
         {/* Speed control */}
         <div className="relative ml-2" ref={speedRef}>
           <button
+            aria-expanded={showSpeedMenu}
+            aria-haspopup="menu"
+            aria-label={`Playback speed: ${getSpeedLabel(playbackSpeed)}`}
             onClick={() => setShowSpeedMenu(prev => !prev)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all duration-200 text-xs font-bold tracking-wide
               ${showSpeedMenu

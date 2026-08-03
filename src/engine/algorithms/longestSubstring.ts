@@ -1,9 +1,9 @@
 import type { Step, DSSnapshot } from '../Step';
 
-export function* longestSubstring(arr: number[]): Generator<Step<DSSnapshot>, void, unknown> {
-  const state = [...arr];
+export function* longestSubstring(): Generator<Step<DSSnapshot>, void, unknown> {
+  const state = [...'ALGORITHM'];
   let maxLen = 0, start = 0;
-  let seen = new Map<number, number>();
+  const seen = new Map<string, number>();
   
   for(let end=0; end<state.length; end++) {
     if (seen.has(state[end])) {

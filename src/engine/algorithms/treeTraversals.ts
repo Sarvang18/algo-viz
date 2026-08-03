@@ -1,4 +1,4 @@
-import type { Step, DSSnapshot, DSNode } from '../Step';
+import type { Step, DSSnapshot, DSNode, TreeInput } from '../Step';
 
 export function* treeTraversals(
   input: { root: string | null, nodes: Record<string, DSNode> },
@@ -66,9 +66,9 @@ export function* treeTraversals(
   };
 }
 
-export function* preorder(input: any) { yield* treeTraversals(input, 'pre'); }
-export function* inorder(input: any) { yield* treeTraversals(input, 'in'); }
-export function* postorder(input: any) { yield* treeTraversals(input, 'post'); }
+export function* preorder(input: TreeInput) { yield* treeTraversals(input, 'pre'); }
+export function* inorder(input: TreeInput) { yield* treeTraversals(input, 'in'); }
+export function* postorder(input: TreeInput) { yield* treeTraversals(input, 'post'); }
 
 export const treeTraversalsCode = `function traverse(root, mode) {
   function dfs(node) {

@@ -1,7 +1,7 @@
 import type { Step, DSSnapshot } from '../Step';
 
 export function* towerOfHanoi(n: number): Generator<Step<DSSnapshot>, void, unknown> {
-  let pegs: number[][] = [
+  const pegs: number[][] = [
     Array.from({length: n}, (_, i) => n - i),
     [],
     []

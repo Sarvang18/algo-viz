@@ -73,7 +73,7 @@ export function* rabinKarp(): Generator<Step<DSSnapshot>, void, unknown> {
   yield { action: "highlight", indices: Array.from({length:pat.length},(_,i)=>offset+i), snapshot: { type: 'array', data: [...state] }, meta: { line: 7, vars: { templateHash: p } } };
 
   for(let i=0; i<=text.length - pat.length; i++) {
-    let windowIndices = Array.from({length:pat.length},(_,idx)=>i+idx);
+    const windowIndices = Array.from({length:pat.length},(_,idx)=>i+idx);
     yield { action: "compare", indices: [...windowIndices, ...Array.from({length:pat.length}, (_,ix)=>offset+ix)], snapshot: { type: 'array', data: [...state] }, meta: { line: 11, vars: { windowHash: t, targetHash: p } } };
     
     if (p === t) {
@@ -162,15 +162,15 @@ export const zAlgoCode = `function ZAlgorithm(text, pat) {
 
 export function* manacher(): Generator<Step<DSSnapshot>, void, unknown> {
   const s = "abacaba";
-  let T = "#" + s.split("").join("#") + "#"; 
+  const T = "#" + s.split("").join("#") + "#";
   const state = [...T];
   yield { action: "custom", indices: [], snapshot: { type: 'array', data: [...state] }, meta: { line: 1, vars: { transformedString: T } } };
 
-  let N = T.length, P = Array(N).fill(0);
+  const N = T.length, P = Array(N).fill(0);
   let C = 0, R = 0;
   
   for(let i=1; i<N-1; i++) {
-    let mirror = 2*C - i;
+    const mirror = 2*C - i;
     if (R > i) P[i] = Math.min(R - i, P[mirror]);
     
     yield { action: "highlight", indices: [i, C], snapshot: { type: 'array', data: [...state] }, meta: { line: 6, vars: { trackingIndex: i, expandingCenter: C } } };

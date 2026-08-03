@@ -1,73 +1,54 @@
-# React + TypeScript + Vite
+# algo.platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An interactive Data Structures and Algorithms visualizer built with React, TypeScript, Redux Toolkit, Vite, Tailwind CSS, Monaco Editor, and Framer Motion.
 
-Currently, two official plugins are available:
+The catalog contains array, recursion, backtracking, tree, graph, dynamic-programming, greedy, string, bit-manipulation, heap, and number-theory demonstrations. Each algorithm emits immutable execution steps containing a data-structure snapshot, highlighted elements, source line, and live variables.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Requirements
 
-## React Compiler
+- Node.js 20.19+ or 22.12+
+- npm
+- A Groq API key only if the optional AlgoBot chat feature is needed
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Local setup
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+copy .env.example .env
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Set `GROQ_API_KEY` in `.env` to enable chat. The Vite development server provides the local `/api/chat` route, so a separate server is not required.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Optional environment variables:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- `GROQ_MODEL`: overrides the default Groq model.
+- `ALLOWED_CHAT_ORIGINS`: comma-separated additional frontend origins accepted by the deployed API.
+
+Never commit `.env`; it is ignored by Git.
+
+## Commands
+
+```bash
+npm run dev       # Vite development server with local chat API middleware
+npm test          # Algorithm and API validation tests
+npm run lint      # ESLint quality gate
+npm run build     # Type-check and create the production bundle
+npm run preview   # Preview the static production frontend
 ```
+
+For a deployed chatbot, use a host that supports the serverless function in `api/chat.ts` (for example Vercel). The endpoint applies same-origin checks, bounded input validation, an upstream timeout, and a best-effort per-instance rate limit. Production deployments with significant traffic should additionally enforce account-level quotas or an edge rate limiter.
+
+## Architecture
+
+- `src/engine/algorithms`: generator-based algorithm implementations
+- `src/engine/translations`: maintained C++, Java, and Python implementations
+- `src/engine/runner.ts`: immutable step collection and safety limit
+- `src/engine/Step.ts`: snapshots and execution-step contracts
+- `src/components/Visualizer`: array, tree, matrix, graph, and Hanoi renderers
+- `src/store`: playback state
+- `api/chatCore.ts`: validated provider-independent chat request logic
+- `api/chat.ts`: secured serverless HTTP boundary
+- `tests`: correctness and request-validation coverage
+
+The code panel supports C++, Java, JavaScript, and Python for every enabled algorithm. The selected language is remembered locally; execution-line highlighting is limited to JavaScript because visualizer step line numbers correspond to the JavaScript implementation.

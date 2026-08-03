@@ -4,7 +4,7 @@ export function* insertionSort(arr: number[]): Generator<Step<DSSnapshot>, void,
   const state = [...arr];
 
   for (let i = 1; i < state.length; i++) {
-    let key = state[i];
+    const key = state[i];
     let j = i - 1;
 
     yield {

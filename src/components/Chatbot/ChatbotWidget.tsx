@@ -39,15 +39,9 @@ export const ChatbotWidget: React.FC = () => {
 
     // Format history for the API (except the last user message which is handled separately)
     const history = messages.map(msg => ({
-      role: msg.role === 'bot' ? 'model' : 'user',
+      role: msg.role === 'bot' ? 'assistant' : 'user',
       text: msg.text
     }));
-
-    // Build Context
-    let contextStr = "User is on the home dashboard, not viewing any specific algorithm right now.";
-    if (activeAlgoObj) {
-      contextStr = `User is currently viewing the visualization for the algorithm: "${activeAlgoObj.name}" (Data Structure Type: ${activeAlgoObj.dsType}). Assume their questions are related to this algorithm unless specified otherwise.`;
-    }
 
     try {
       const response = await fetch('/api/chat', {
@@ -56,24 +50,21 @@ export const ChatbotWidget: React.FC = () => {
         body: JSON.stringify({
           message: userMsg.text,
           history,
-          context: contextStr
+          algorithm: activeAlgoObj?.name ?? null,
         })
       });
 
-      if (!response.ok) {
-        throw new Error('API Error');
-      }
-
       const data = await response.json();
+      if (!response.ok) throw new Error(typeof data.error === 'string' ? data.error : 'Chat request failed.');
       
       const botMsg: Message = { id: (Date.now() + 1).toString(), role: 'bot', text: data.reply || "No response generated." };
       setMessages(prev => [...prev, botMsg]);
     } catch (error) {
-      console.error(error);
+      const message = error instanceof Error ? error.message : 'Chat request failed.';
       const errorMsg: Message = { 
         id: (Date.now() + 1).toString(), 
         role: 'bot', 
-        text: "Sorry, I'm having trouble connecting to the brain right now. Make sure `GROQ_API_KEY` is configured." 
+        text: `Sorry, I couldn't complete that request. ${message}`
       };
       setMessages(prev => [...prev, errorMsg]);
     } finally {
@@ -90,7 +81,7 @@ export const ChatbotWidget: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-6 w-[380px] h-[550px] bg-black/60 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.8)] flex flex-col z-50 overflow-hidden"
+            className="fixed bottom-20 right-4 z-50 flex h-[min(550px,calc(100vh-6rem))] w-[calc(100vw-2rem)] max-w-[380px] flex-col overflow-hidden rounded-2xl border border-white/10 bg-black/60 shadow-[0_8px_32px_rgba(0,0,0,0.8)] backdrop-blur-2xl sm:bottom-24 sm:right-6"
           >
             {/* Header */}
             <div className="h-14 border-b border-white/10 bg-white/5 flex items-center justify-between px-4 shrink-0 relative overflow-hidden">
@@ -107,7 +98,8 @@ export const ChatbotWidget: React.FC = () => {
                    </div>
                  </div>
                </div>
-               <button 
+              <button
+                 aria-label="Close AlgoBot"
                  onClick={() => setIsOpen(false)}
                  className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors relative z-10"
                >
@@ -135,6 +127,7 @@ export const ChatbotWidget: React.FC = () => {
             <div className="p-3 border-t border-white/10 bg-black/40 shrink-0">
               <div className="relative flex items-center">
                 <input
+                  aria-label="Ask AlgoBot a question"
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
@@ -157,10 +150,11 @@ export const ChatbotWidget: React.FC = () => {
 
       {/* Floating Toggle Button */}
       <motion.button
+        aria-label={isOpen ? 'Close AlgoBot' : 'Open AlgoBot'}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-tr from-purple-600 to-blue-600 rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(147,51,234,0.5)] border border-white/10 z-50 group hover:shadow-[0_8px_30px_rgba(147,51,234,0.6)] cursor-pointer"
+        className="fixed bottom-4 right-4 z-50 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-gradient-to-tr from-purple-600 to-blue-600 shadow-[0_4px_20px_rgba(147,51,234,0.5)] hover:shadow-[0_8px_30px_rgba(147,51,234,0.6)] sm:bottom-6 sm:right-6"
       >
         <MessageCircle size={24} className="text-white group-hover:scale-110 transition-transform" />
       </motion.button>

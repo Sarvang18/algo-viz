@@ -8,7 +8,7 @@ export const ComplexityPanel: React.FC = () => {
   const complexities: Record<string, { time: string, space: string, name: string }> = {
     // Original ones
     bubbleSort: { time: 'O(n²)', space: 'O(1)', name: 'Bubble Sort' },
-    quickSort: { time: 'O(n log n)', space: 'O(log n)', name: 'Quick Sort' },
+    quickSort: { time: 'Avg O(n log n)', space: 'O(log n)', name: 'Quick Sort' },
     preorder: { time: 'O(n)', space: 'O(n)', name: 'Preorder' },
     inorder: { time: 'O(n)', space: 'O(n)', name: 'Inorder' },
     postorder: { time: 'O(n)', space: 'O(n)', name: 'Postorder' },
@@ -24,8 +24,9 @@ export const ComplexityPanel: React.FC = () => {
     countingSort: { time: 'O(n + k)', space: 'O(n + k)', name: 'Counting Sort' },
     radixSort: { time: 'O(d * (n + b))', space: 'O(n + b)', name: 'Radix Sort' },
     bucketSort: { time: 'O(n + k)', space: 'O(n + k)', name: 'Bucket Sort' },
+    twoSum: { time: 'O(n log n)', space: 'O(n)', name: 'Two Sum' },
     threeSum: { time: 'O(n²)', space: 'O(1)', name: '3Sum' },
-    slidingWindowMax: { time: 'O(n)', space: 'O(1)', name: 'Sliding Window Maximum' },
+    slidingWindowMax: { time: 'O(n)', space: 'O(k)', name: 'Sliding Window Maximum' },
     longestSubstring: { time: 'O(n)', space: 'O(min(n, a))', name: 'Longest Substring Without Repeating' },
 
     factorial: { time: 'O(n)', space: 'O(n)', name: 'Factorial' },

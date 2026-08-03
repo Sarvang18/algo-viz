@@ -1,4 +1,5 @@
 import type { DSType } from './Step';
+import type { AlgorithmGenerator } from './runner';
 import { bubbleSortCode, bubbleSort } from './algorithms/bubbleSort';
 import { quickSortCode, quickSort } from './algorithms/quickSort';
 import { treeTraversalsCode, preorder, inorder, postorder } from './algorithms/treeTraversals';
@@ -68,9 +69,10 @@ export interface AlgorithmMeta {
   name: string;
   dsType: DSType;
   implemented: boolean;
-  generator?: any;
+  generator?: AlgorithmGenerator;
   code?: string;
   tags?: string[];
+  randomizable?: boolean;
 }
 
 export interface SubCategory {
@@ -116,7 +118,7 @@ export const catalog: CatalogCategory[] = [
         name: '🔹 Two Pointer / Sliding Window',
         algorithms: [
           { id: 'twoSum', name: 'Two Sum', dsType: 'array', implemented: true, generator: twoSum, code: twoSumCode },
-          { id: 'threeSum', name: '3Sum / 4Sum', dsType: 'array', implemented: true, generator: threeSum, code: threeSumCode },
+          { id: 'threeSum', name: '3Sum', dsType: 'array', implemented: true, generator: threeSum, code: threeSumCode },
           { id: 'slidingWindowMax', name: 'Sliding Window Maximum', dsType: 'array', implemented: true, generator: slidingWindowMax, code: slidingWindowMaxCode },
           { id: 'longestSubstring', name: 'Longest Substring Without Repeating', dsType: 'array', implemented: true, generator: longestSubstring, code: longestSubstringCode },
         ]
@@ -193,38 +195,38 @@ export const catalog: CatalogCategory[] = [
       {
         name: '🔹 Traversal',
         algorithms: [
-           { id: 'bfs', name: 'BFS', dsType: 'matrix', implemented: true, generator: GTr.bfs, code: GTr.bfsCode },
-           { id: 'dfs', name: 'DFS', dsType: 'matrix', implemented: true, generator: GTr.dfs, code: GTr.dfsCode },
+           { id: 'bfs', name: 'BFS', dsType: 'graph', implemented: true, generator: GTr.bfs, code: GTr.bfsCode },
+           { id: 'dfs', name: 'DFS', dsType: 'graph', implemented: true, generator: GTr.dfs, code: GTr.dfsCode },
         ]
       },
       {
         name: '🔹 Shortest Path',
         algorithms: [
-           { id: 'dijkstra', name: 'Dijkstra', dsType: 'matrix', implemented: true, generator: SP.dijkstra, code: SP.dijkstraCode },
-           { id: 'bellmanFord', name: 'Bellman-Ford', dsType: 'matrix', implemented: true, generator: SP.bellmanFord, code: SP.bellmanFordCode },
-           { id: 'floydWarshall', name: 'Floyd-Warshall', dsType: 'matrix', implemented: true, generator: SP.floydWarshall, code: SP.floydWarshallCode },
+           { id: 'dijkstra', name: 'Dijkstra', dsType: 'graph', implemented: true, generator: SP.dijkstra, code: SP.dijkstraCode },
+           { id: 'bellmanFord', name: 'Bellman-Ford', dsType: 'graph', implemented: true, generator: SP.bellmanFord, code: SP.bellmanFordCode },
+           { id: 'floydWarshall', name: 'Floyd-Warshall', dsType: 'graph', implemented: true, generator: SP.floydWarshall, code: SP.floydWarshallCode },
         ]
       },
       {
         name: '🔹 Minimum Spanning Tree',
         algorithms: [
-           { id: 'kruskal', name: 'Kruskal', dsType: 'matrix', implemented: true, generator: MST.kruskal, code: MST.kruskalCode },
-           { id: 'prim', name: 'Prim', dsType: 'matrix', implemented: true, generator: MST.prim, code: MST.primCode },
+           { id: 'kruskal', name: 'Kruskal', dsType: 'graph', implemented: true, generator: MST.kruskal, code: MST.kruskalCode },
+           { id: 'prim', name: 'Prim', dsType: 'graph', implemented: true, generator: MST.prim, code: MST.primCode },
         ]
       },
       {
         name: '🔹 Topological Sort',
         algorithms: [
-           { id: 'kahn', name: 'Kahn’s Algorithm', dsType: 'matrix', implemented: true, generator: MST.kahn, code: MST.kahnCode },
-           { id: 'dfsTopo', name: 'DFS-based topo sort', dsType: 'matrix', implemented: true, generator: MST.dfsTopo, code: MST.dfsTopoCode },
+           { id: 'kahn', name: 'Kahn’s Algorithm', dsType: 'graph', implemented: true, generator: MST.kahn, code: MST.kahnCode },
+           { id: 'dfsTopo', name: 'DFS-based topo sort', dsType: 'graph', implemented: true, generator: MST.dfsTopo, code: MST.dfsTopoCode },
         ]
       },
       {
         name: '🔹 Advanced',
         algorithms: [
-           { id: 'unionFind', name: 'Union-Find (Disjoint Set)', dsType: 'matrix', implemented: true, generator: MST.unionFind, code: MST.unionFindCode },
-           { id: 'tarjan', name: 'Tarjan’s Algorithm (SCC)', dsType: 'matrix', implemented: true, generator: MST.tarjan, code: MST.tarjanCode },
-           { id: 'bridges', name: 'Bridges & Articulation Points', dsType: 'matrix', implemented: true, generator: MST.bridges, code: MST.bridgesCode },
+           { id: 'unionFind', name: 'Union-Find (Disjoint Set)', dsType: 'graph', implemented: true, generator: MST.unionFind, code: MST.unionFindCode },
+           { id: 'tarjan', name: 'Tarjan’s Algorithm (SCC)', dsType: 'graph', implemented: true, generator: MST.tarjan, code: MST.tarjanCode },
+           { id: 'bridges', name: 'Bridges & Articulation Points', dsType: 'graph', implemented: true, generator: MST.bridges, code: MST.bridgesCode },
         ]
       },
     ]
@@ -385,9 +387,17 @@ const searchTags: Record<string, string[]> = {
   heightDepth: ['dfs', 'depth first search', 'recursion', 'metrics'],
   lca: ['lowest common ancestor', 'dfs', 'paths'],
   // BST
-  insertionDeletion: ['bst', 'binary search tree', 'add', 'remove'],
-  validateBst: ['bst', 'binary search tree', 'check', 'valid'],
+  bstInsert: ['bst', 'binary search tree', 'insert', 'search'],
+  balancedTree: ['tree', 'height balanced', 'check'],
   kthSmallest: ['bst', 'inorder', 'binary search tree', 'statistics'],
+  inorder: ['tree', 'depth first search', 'left root right'],
+  preorder: ['tree', 'depth first search', 'root left right'],
+  postorder: ['tree', 'depth first search', 'left right root'],
+  diameter: ['tree', 'longest path', 'height'],
+  avlTree: ['tree', 'balanced bst', 'rotations'],
+  segmentTree: ['tree', 'range query', 'range sum'],
+  fenwickTree: ['tree', 'binary indexed tree', 'prefix sum'],
+  trie: ['tree', 'prefix', 'dictionary', 'strings'],
   // Graphs
   bfs: ['graph', 'breadth first search', 'shortest path', 'queue'],
   dfs: ['graph', 'depth first search', 'stack', 'recursion'],
@@ -396,12 +406,15 @@ const searchTags: Record<string, string[]> = {
   floydWarshall: ['shortest path', 'graph', 'all pairs', 'dynamic programming', 'matrix'],
   kruskal: ['mst', 'minimum spanning tree', 'greedy', 'disjoint set', 'union find', 'edges'],
   prim: ['mst', 'minimum spanning tree', 'greedy', 'priority queue', 'vertices'],
-  topologicalSort: ['graph', 'dag', 'directed acyclic', 'dependencies', 'ordering', 'kahn'],
+  kahn: ['graph', 'dag', 'directed acyclic', 'dependencies', 'ordering', 'indegree'],
+  dfsTopo: ['graph', 'dag', 'topological', 'depth first search'],
+  unionFind: ['graph', 'disjoint set', 'components'],
+  tarjan: ['graph', 'strongly connected components', 'low link'],
+  bridges: ['graph', 'articulation points', 'low link'],
   // String Matching
-  naiveStringMatch: ['string', 'search', 'brute force', 'substring'],
   kmp: ['string', 'search', 'knuth morris pratt', 'lps', 'pattern'],
   rabinKarp: ['string', 'search', 'hashing', 'rolling hash', 'pattern'],
-  zAlgorithm: ['string', 'search', 'z array', 'pattern', 'linear'],
+  zAlgo: ['string', 'search', 'z array', 'pattern', 'linear'],
   manacher: ['string', 'palindrome', 'longest', 'linear'],
   // Dynamic Programming
   fibonacciDp: ['dp', 'memoization', 'tabulation', 'bottom up', 'top down'],
@@ -434,11 +447,22 @@ const searchTags: Record<string, string[]> = {
   fastExponentiation: ['math', 'power', 'binary exponentiation', 'divide and conquer'],
 };
 
+const randomizableIds = new Set([
+  'linearSearch', 'binarySearch', 'ternarySearch',
+  'bubbleSort', 'selectionSort', 'insertionSort', 'mergeSort', 'quickSort',
+  'heapSort', 'countingSort', 'radixSort', 'bucketSort',
+  'twoSum', 'threeSum', 'slidingWindowMax', 'permutations', 'subsetGen',
+  'inorder', 'preorder', 'postorder', 'levelOrder', 'heightDepth', 'diameter',
+  'lca', 'balancedTree', 'bstInsert', 'kthSmallest', 'avlTree', 'dpTrees',
+  'segmentTree', 'fenwickTree', 'lis', 'heapSort2', 'kthLargest',
+]);
+
 // Inject tags into catalog
 catalog.forEach(category => {
   if (category.subcategories) {
     category.subcategories.forEach(sub => {
       sub.algorithms.forEach(algo => {
+        algo.randomizable = randomizableIds.has(algo.id);
         if (searchTags[algo.id]) {
           algo.tags = searchTags[algo.id];
         }
@@ -447,6 +471,7 @@ catalog.forEach(category => {
   }
   if (category.algorithms) {
     category.algorithms.forEach(algo => {
+      algo.randomizable = randomizableIds.has(algo.id);
       if (searchTags[algo.id]) {
         algo.tags = searchTags[algo.id];
       }
